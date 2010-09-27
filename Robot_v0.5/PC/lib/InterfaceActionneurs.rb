@@ -9,67 +9,67 @@ require "SerieSimple"
 
 class InterfaceActionneurs < Serie
 
-	# Initialise avec un périphérique à une certaine vitesse
-	def initialize(peripherique = "/dev/ttyUSB0", vitesse = 57600)
-		super(peripherique, vitesse)
-	end
-	
-	# Allume la led du jumper
-	def allumerLed
-	        commande "b"
-	end
-	
-	# Retourne l'état de l'interrupteur jack déclenchant le lancement du 
-	# robot
-	def etatJumper
-		commande("a").to_i
-	end
-	
-	# Envoi la commande pour lever la fourche
-	def leveFourche
-		commande "e"
-	end
-	
-	# Envoi la commande pour baisser la fourche
-	def baisseFourche
-		commande "f"
-	end
+  # Initialise avec un périphérique à une certaine vitesse
+  def initialize(peripherique = "/dev/ttyUSB0", vitesse = 57600)
+    super(peripherique, vitesse)
+  end
 
-	# Envoi la commande pour rentrer complètement la fourche
-	def rangeFourche
-		commande "d"
-	end
-	
-	def stopUrgence
-	        commande "c"
-	end
-	
-        def rouleauDirect
-                commande "g"
-        end
-        
-        def rouleauIndirect
-                commande "h"
-        end
-        
-        def stopRouleau
-                commande "i"
-        end
-        
-        def selecteurGauche
-                commande "j"
-        end
-        
-        def selecteurDroite
-                commande "k"
-        end
+  # Allume la led du jumper
+  def allumerLed
+    commande "b"
+  end
 
-	def selecteurMilieu
-		commande "p"
-	end
+  # Retourne l'état de l'interrupteur jack déclenchant le lancement du 
+  # robot
+  def etatJumper
+    commande("a").to_i
+  end
 
-	def stopSelecteur
-		commande "o"
-	end
-        
+  # Envoi la commande pour lever la fourche
+  def leveFourche
+    commande "e"
+  end
+
+  # Envoi la commande pour baisser la fourche
+  def baisseFourche
+    commande "f"
+  end
+
+  # Envoi la commande pour rentrer complètement la fourche
+  def rangeFourche
+    commande "d"
+  end
+
+  def stopUrgence
+    commande "c"
+  end
+
+  def rouleauDirect
+    commande "g"
+  end
+
+  def rouleauIndirect
+    commande "h"
+  end
+
+  def stopRouleau
+    commande "i"
+  end
+
+  def selecteurGauche
+    commande "j"
+  end
+
+  def selecteurDroite
+    commande "k"
+  end
+
+  def selecteurMilieu
+    commande "p"
+  end
+
+  def stopSelecteur
+    commande "o"
+  end
+
 end

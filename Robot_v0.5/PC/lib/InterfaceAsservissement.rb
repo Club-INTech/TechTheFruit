@@ -17,292 +17,292 @@ require "Position"
 
 class InterfaceAsservissement < SerieThread
 
-        # Contient la position du robot à chaque instant
-        attr_accessor :position, :sens
+  # Contient la position du robot à chaque instant
+  attr_accessor :position, :sens
 
-        # Constantes permettant la conversion en coordonnées polaires et 
-        # cartésiennes
-        attr_accessor :conversionTicksDistance, :conversionTicksAngle
-        
-        attr_reader :PWM, :Vitesse
+  # Constantes permettant la conversion en coordonnées polaires et 
+  # cartésiennes
+  attr_accessor :conversionTicksDistance, :conversionTicksAngle
 
-        # * Initialise la liaison série avec un périphérique à une vitesse donnée
-        # * Définit les valeurs par défaut aux constantes
-        def initialize(peripherique = "/dev/ttyUSB0", vitesse = 57600, positionParDefaut = Position.new(0, 0, 0))
-                super(peripherique, vitesse)
+  attr_reader :PWM, :Vitesse
 
-                @log = Logger.instance
+  # * Initialise la liaison série avec un périphérique à une vitesse donnée
+  # * Définit les valeurs par défaut aux constantes
+  def initialize(peripherique = "/dev/ttyUSB0", vitesse = 57600, positionParDefaut = Position.new(0, 0, 0))
+    super(peripherique, vitesse)
 
-                @position = positionParDefaut
-                @sens = 1
+    @log = Logger.instance
 
-                @conversionTicksDistance = (9.6769 * 1)
-                @conversionTicksAngle = 1528.735
+    @position = positionParDefaut
+    @sens = 1
 
-                @offsetAngulaire = positionParDefaut.angle
-                @offsetG = @conversionTicksAngle * positionParDefaut.angle / 2
-                @offsetD = -1 * @offsetG
+    @conversionTicksDistance = (9.6769 * 1)
+    @conversionTicksAngle = 1528.735
 
-                @encodeurPrecedentG = @offsetG
-                @encodeurPrecedentD = @offsetD
+    @offsetAngulaire = positionParDefaut.angle
+    @offsetG = @conversionTicksAngle * positionParDefaut.angle / 2
+    @offsetD = -1 * @offsetG
 
-                @blocageTranslation = 0
-                @blocageRotation = 0
-                
-                @skip = false
-                
-                @commandeAngle = ""
-                @commandeDistance = ""
-                
-                @vecteurDeplacement = Vecteur.new
-                
-                @PWM = [1023, 1023]
-                @Vitesse = [3000, 3000]
-        end
+    @encodeurPrecedentG = @offsetG
+    @encodeurPrecedentD = @offsetD
 
-        # Surcharge de la fonction callback héritée de SerieThread afin de 
-        # calculer à chaque nouvelle réception de données la nouvelle position
-        # du robot.
-        def callback retour
-                if @skip
-                        donnees = retour.split(" ")
-                        @skip = false if donnees[0].to_i.abs <= 10 && donnees[1].to_i.abs <= 10
-                else
-                        donnees = retour.split(" ")
+    @blocageTranslation = 0
+    @blocageRotation = 0
 
-                        return false if donnees.size != 4
+    @skip = false
 
-                        encodeurG = @offsetG + -1 * (donnees[0].to_i)
-                        encodeurD = @offsetD + 1  * (donnees[1].to_i)
+    @commandeAngle = ""
+    @commandeDistance = ""
 
-                        @blocageTranslation = donnees[3].to_i
-                        @blocageRotation = donnees[2].to_i
-                        
-			distance = (encodeurG - @encodeurPrecedentG + encodeurD - @encodeurPrecedentD) / @conversionTicksDistance
-                        
-                        return false if distance > 1000
+    @vecteurDeplacement = Vecteur.new
 
-                        anciennePosition = @position.clone
-                                
-                        @position.x += distance * Math.cos(@position.angle)
-                        @position.y += distance * Math.sin(@position.angle)
-                        
-                        ancienVecteurDeplacement = @vecteurDeplacement
-                         # puts @vecteurDeplacement.inspect
-                         @vecteurDeplacement = Vecteur.new(anciennePosition, @position)
-                         
-                         v = Vecteur.new
-                         v.x = Math.cos(@position.angle)
-                         v.y = Math.sin(@position.angle)
-                           
-                         signe = v.produitScalaire(@vecteurDeplacement)
-                         if signe >= 0
-                                 @sens += 1 if @sens < 20
-                         else
-                                 @sens -= 1 if @sens > -20
-                         end
-                        
-                        # puts @sens
+    @PWM = [1023, 1023]
+    @Vitesse = [3000, 3000]
+  end
 
-                        @position.angle = (encodeurG - encodeurD) / (@conversionTicksAngle)
+  # Surcharge de la fonction callback héritée de SerieThread afin de 
+  # calculer à chaque nouvelle réception de données la nouvelle position
+  # du robot.
+  def callback retour
+    if @skip
+      donnees = retour.split(" ")
+      @skip = false if donnees[0].to_i.abs <= 10 && donnees[1].to_i.abs <= 10
+    else
+      donnees = retour.split(" ")
 
-                        # puts donnees.inspect
-                        #puts @position.inspect
+      return false if donnees.size != 4
 
-                        @encodeurPrecedentG = encodeurG
-                        @encodeurPrecedentD = encodeurD
-                        # @log.debug "Réception codeuses : " + donnees.inspect
-                end
-        end
+      encodeurG = @offsetG + -1 * (donnees[0].to_i)
+      encodeurD = @offsetD + 1  * (donnees[1].to_i)
 
-        # Envoi d'une consigne en distance et en angle au robot relatif par
-        # rapport à sa position courante
-        def envoiConsigne distance, angle		
-                a = ((angle - @offsetAngulaire) * @conversionTicksAngle + @encodeurPrecedentG - @encodeurPrecedentD).to_i
-                d = (distance * @conversionTicksDistance + @encodeurPrecedentG + @encodeurPrecedentD).to_i
+      @blocageTranslation = donnees[3].to_i
+      @blocageRotation = donnees[2].to_i
 
-                distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne d, a
+      distance = (encodeurG - @encodeurPrecedentG + encodeurD - @encodeurPrecedentD) / @conversionTicksDistance
 
-                # if @commandeAngle != commandeAngle + angleFormate
-                        ecrire commandeAngle + angleFormate
-                        @commandeAngle = commandeAngle + angleFormate
-                # end
-                # if @commandeDistance != commandeDistance + distanceFormate
-                        ecrire commandeDistance + distanceFormate
-                        @commandeDistance = commandeDistance + distanceFormate
-                # end
-        end
+      return false if distance > 1000
 
-        # Envoi d'une consigne en distance et en angle absolue
-        def envoiConsigneBrute distance, angle
-                distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne distance, angle
+      anciennePosition = @position.clone
 
-                # if @commandeAngle != commandeAngle + angleFormate
-                        ecrire commandeAngle + angleFormate
-                        @commandeAngle = commandeAngle + angleFormate
-                # end
-                # if @commandeDistance != commandeDistance + distanceFormate
-                        ecrire commandeDistance + distanceFormate
-                        @commandeDistance = commandeDistance + distanceFormate
-                # end
-        end
+      @position.x += distance * Math.cos(@position.angle)
+      @position.y += distance * Math.sin(@position.angle)
 
-        # Envoi d'une consigne en angle
-        def envoiConsigneAngle angle
-                a = ((angle - @offsetAngulaire) * @conversionTicksAngle + @encodeurPrecedentG - @encodeurPrecedentD).to_i
-                distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne 0, a
-                
-                # if @commandeAngle != commandeAngle + angleFormate
-                        ecrire commandeAngle + angleFormate
-                        @commandeAngle = commandeAngle + angleFormate
-                # end
-        end
+      ancienVecteurDeplacement = @vecteurDeplacement
+      # puts @vecteurDeplacement.inspect
+      @vecteurDeplacement = Vecteur.new(anciennePosition, @position)
 
-        # Envoi d'une consigne en distance
-        def envoiConsigneDistance distance
-                d = (distance * @conversionTicksDistance + @encodeurPrecedentG + @encodeurPrecedentD).to_i
-                distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne d, 0
+      v = Vecteur.new
+      v.x = Math.cos(@position.angle)
+      v.y = Math.sin(@position.angle)
 
-                # if @commandeDistance != commandeDistance + distanceFormate
-                        ecrire commandeDistance + distanceFormate
-                        @commandeDistance = commandeDistance + distanceFormate
-                # end
-        end
+      signe = v.produitScalaire(@vecteurDeplacement)
+      if signe >= 0
+        @sens += 1 if @sens < 20
+      else
+        @sens -= 1 if @sens > -20
+      end
 
-        # Demande au robot d'activer l'envoi des données de roues codeuses sur
-        # la liaison série
-        def activeOdometrie
-                ecrire "c"
-        end
+      # puts @sens
 
-        # Désactive l'envoi de données
-        def desactiveOdometrie
-                ecrire "d"
-        end
+      @position.angle = (encodeurG - encodeurD) / (@conversionTicksAngle)
 
-        # Bascule l'état de l'asservissement d'un état vers un autre 
-        # (tout ou rien)
-        def desactiveAsservissementRotation
-                ecrire "h"
-        end
+      # puts donnees.inspect
+      #puts @position.inspect
 
-        def desactiveAsservissementTranslation
-                ecrire "i"
-        end
+      @encodeurPrecedentG = encodeurG
+      @encodeurPrecedentD = encodeurD
+      # @log.debug "Réception codeuses : " + donnees.inspect
+    end
+  end
 
-        def desactiveAsservissement
-                ecrire "h"
-                ecrire "i"
-        end
+  # Envoi d'une consigne en distance et en angle au robot relatif par
+  # rapport à sa position courante
+  def envoiConsigne distance, angle		
+    a = ((angle - @offsetAngulaire) * @conversionTicksAngle + @encodeurPrecedentG - @encodeurPrecedentD).to_i
+    d = (distance * @conversionTicksDistance + @encodeurPrecedentG + @encodeurPrecedentD).to_i
 
-        # Reset du périphérique
-        # * Désactivation de l'odométrie
-        # * Remise à zéro des consignes et des codeuses
-        def reset
-                desactiveOdometrie
-                ecrire "j"
-        end
+    distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne d, a
 
-        # Remise à zéro des codeuses et de la consigne
-        def remiseAZero nouvellePosition
-                ecrire "j"
-                
-                @skip = true
-                
-                @position = nouvellePosition
-                
-                @offsetAngulaire = nouvellePosition.angle
-                @offsetG = (@conversionTicksAngle * nouvellePosition.angle / 2).to_i
-                @offsetD = (-1 * @offsetG).to_i
+    # if @commandeAngle != commandeAngle + angleFormate
+    ecrire commandeAngle + angleFormate
+    @commandeAngle = commandeAngle + angleFormate
+    # end
+    # if @commandeDistance != commandeDistance + distanceFormate
+    ecrire commandeDistance + distanceFormate
+    @commandeDistance = commandeDistance + distanceFormate
+    # end
+  end
 
-                @encodeurPrecedentG = @offsetG.to_i
-                @encodeurPrecedentD = @offsetD.to_i
-        end
+  # Envoi d'une consigne en distance et en angle absolue
+  def envoiConsigneBrute distance, angle
+    distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne distance, angle
 
-        # Formate les consignes afin de les transmettre
-        def formatageConsigne distance, angle
-                if angle > 0
-                        commandeAngle = "g"
-                else
-                        commandeAngle = "b"
-                        angle *= -1
-                end
+    # if @commandeAngle != commandeAngle + angleFormate
+    ecrire commandeAngle + angleFormate
+    @commandeAngle = commandeAngle + angleFormate
+    # end
+    # if @commandeDistance != commandeDistance + distanceFormate
+    ecrire commandeDistance + distanceFormate
+    @commandeDistance = commandeDistance + distanceFormate
+    # end
+  end
 
-                if distance > 0
-                        commandeDistance = "f"
-                else
-                        commandeDistance = "a"
-                        distance *= -1
-                end
+  # Envoi d'une consigne en angle
+  def envoiConsigneAngle angle
+    a = ((angle - @offsetAngulaire) * @conversionTicksAngle + @encodeurPrecedentG - @encodeurPrecedentD).to_i
+    distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne 0, a
 
-                [distance.to_i.to_s.rjust(8, "0"), angle.to_i.to_s.rjust(8, "0"), commandeDistance, commandeAngle]
-        end
+    # if @commandeAngle != commandeAngle + angleFormate
+    ecrire commandeAngle + angleFormate
+    @commandeAngle = commandeAngle + angleFormate
+    # end
+  end
 
-        # Renvoi l'état des codeuses gauche et droite
-        def codeuses
-                [@encodeurPrecedentG, @encodeurPrecedentD]
-        end
+  # Envoi d'une consigne en distance
+  def envoiConsigneDistance distance
+    d = (distance * @conversionTicksDistance + @encodeurPrecedentG + @encodeurPrecedentD).to_i
+    distanceFormate, angleFormate, commandeDistance, commandeAngle = formatageConsigne d, 0
 
-        # Renvoi l'état des asservissements
-        def blocage
-                [@blocageTranslation, @blocageRotation]
-        end
+    # if @commandeDistance != commandeDistance + distanceFormate
+    ecrire commandeDistance + distanceFormate
+    @commandeDistance = commandeDistance + distanceFormate
+    # end
+  end
 
-        # Renvoi vrai si l'asservissement en translation est bloqué
-        def blocageTranslation
-                @blocageTranslation
-        end
+  # Demande au robot d'activer l'envoi des données de roues codeuses sur
+  # la liaison série
+  def activeOdometrie
+    ecrire "c"
+  end
 
-        # Renvoi vrai si l'asservissement en rotation est bloqué
-        def blocageRotation
-                @blocageRotation
-        end
+  # Désactive l'envoi de données
+  def desactiveOdometrie
+    ecrire "d"
+  end
 
-        # Arrêt progressif du robot
-        def stop
-                ecrire "n"
-        end
+  # Bascule l'état de l'asservissement d'un état vers un autre 
+  # (tout ou rien)
+  def desactiveAsservissementRotation
+    ecrire "h"
+  end
 
-        # Arrêt brutal du robot
-        def stopUrgence
-                ecrire "o"
-        end
+  def desactiveAsservissementTranslation
+    ecrire "i"
+  end
 
-        # Change la vitesse du robot (rotation, translation)
-        def changerVitesse(valeur)
-                valeur = [0, 0] if valeur.size != 2
-                ecrire "r" + valeur[0].to_s.rjust(8, "0")
-                ecrire "l" + valeur[1].to_s.rjust(8, "0")
-                @Vitesse = valeur
-        end
+  def desactiveAsservissement
+    ecrire "h"
+    ecrire "i"
+  end
 
-        # Change l'accélération du robot (rotation, translation)
-        def changerAcceleration(valeur)
-                valeur = [0, 0] if valeur.size != 2
-                ecrire "q" + valeur[0].to_s.rjust(8, "0")
-                ecrire "k" + valeur[1].to_s.rjust(8, "0")
-        end
-        
-        # Change la valeur du PWN (rotation, translation)
-        def changerPWM(valeur)
-                valeur = [0, 0] if valeur.size != 2
-                ecrire "t" + valeur[0].to_s.rjust(8, "0")
-                ecrire "p" + valeur[1].to_s.rjust(8, "0")
-                @PWM = valeur
-        end
-        
-        # Change la valeur de KP (rotation, translation)
-        def changerKp(valeur)
-                valeur = [0, 0] if valeur.size != 2
-                ecrire "s" + valeur[0].to_s.rjust(8, "0")
-                ecrire "m" + valeur[1].to_s.rjust(8, "0")
-        end
+  # Reset du périphérique
+  # * Désactivation de l'odométrie
+  # * Remise à zéro des consignes et des codeuses
+  def reset
+    desactiveOdometrie
+    ecrire "j"
+  end
 
-        # Change la valeur de KP (rotation, translation)
-        def changerKd(valeur)
-                valeur = [0, 0] if valeur.size != 2
-                ecrire "v" + valeur[0].to_s.rjust(8, "0")
-                ecrire "u" + valeur[1].to_s.rjust(8, "0")
-        end
+  # Remise à zéro des codeuses et de la consigne
+  def remiseAZero nouvellePosition
+    ecrire "j"
+
+    @skip = true
+
+    @position = nouvellePosition
+
+    @offsetAngulaire = nouvellePosition.angle
+    @offsetG = (@conversionTicksAngle * nouvellePosition.angle / 2).to_i
+    @offsetD = (-1 * @offsetG).to_i
+
+    @encodeurPrecedentG = @offsetG.to_i
+    @encodeurPrecedentD = @offsetD.to_i
+  end
+
+  # Formate les consignes afin de les transmettre
+  def formatageConsigne distance, angle
+    if angle > 0
+      commandeAngle = "g"
+    else
+      commandeAngle = "b"
+      angle *= -1
+    end
+
+    if distance > 0
+      commandeDistance = "f"
+    else
+      commandeDistance = "a"
+      distance *= -1
+    end
+
+    [distance.to_i.to_s.rjust(8, "0"), angle.to_i.to_s.rjust(8, "0"), commandeDistance, commandeAngle]
+  end
+
+  # Renvoi l'état des codeuses gauche et droite
+  def codeuses
+    [@encodeurPrecedentG, @encodeurPrecedentD]
+  end
+
+  # Renvoi l'état des asservissements
+  def blocage
+    [@blocageTranslation, @blocageRotation]
+  end
+
+  # Renvoi vrai si l'asservissement en translation est bloqué
+  def blocageTranslation
+    @blocageTranslation
+  end
+
+  # Renvoi vrai si l'asservissement en rotation est bloqué
+  def blocageRotation
+    @blocageRotation
+  end
+
+  # Arrêt progressif du robot
+  def stop
+    ecrire "n"
+  end
+
+  # Arrêt brutal du robot
+  def stopUrgence
+    ecrire "o"
+  end
+
+  # Change la vitesse du robot (rotation, translation)
+  def changerVitesse(valeur)
+    valeur = [0, 0] if valeur.size != 2
+    ecrire "r" + valeur[0].to_s.rjust(8, "0")
+    ecrire "l" + valeur[1].to_s.rjust(8, "0")
+    @Vitesse = valeur
+  end
+
+  # Change l'accélération du robot (rotation, translation)
+  def changerAcceleration(valeur)
+    valeur = [0, 0] if valeur.size != 2
+    ecrire "q" + valeur[0].to_s.rjust(8, "0")
+    ecrire "k" + valeur[1].to_s.rjust(8, "0")
+  end
+
+  # Change la valeur du PWN (rotation, translation)
+  def changerPWM(valeur)
+    valeur = [0, 0] if valeur.size != 2
+    ecrire "t" + valeur[0].to_s.rjust(8, "0")
+    ecrire "p" + valeur[1].to_s.rjust(8, "0")
+    @PWM = valeur
+  end
+
+  # Change la valeur de KP (rotation, translation)
+  def changerKp(valeur)
+    valeur = [0, 0] if valeur.size != 2
+    ecrire "s" + valeur[0].to_s.rjust(8, "0")
+    ecrire "m" + valeur[1].to_s.rjust(8, "0")
+  end
+
+  # Change la valeur de KP (rotation, translation)
+  def changerKd(valeur)
+    valeur = [0, 0] if valeur.size != 2
+    ecrire "v" + valeur[0].to_s.rjust(8, "0")
+    ecrire "u" + valeur[1].to_s.rjust(8, "0")
+  end
 
 end
