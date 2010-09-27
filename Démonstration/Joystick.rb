@@ -32,7 +32,7 @@ class Jouet < SerieThread
 	
 	def avance
 		puts "Avance"
-		@distance -= 1000 
+		@distance -= 150 # en fait c'est tourner a gauche 
 		if @distance >= 0
 			distanceFormate = @distance.to_i.to_s.rjust(8, "0")
 			ecrire "b" + distanceFormate
@@ -45,7 +45,7 @@ class Jouet < SerieThread
 
 	def recule
 		puts "Recule"
-		@distance += 1000 
+		@distance += 150 # en fait c'est tourner a droite
 		if @distance >= 0
 			distanceFormate = @distance.to_i.to_s.rjust(8, "0")
 			ecrire "b" + distanceFormate
@@ -58,7 +58,7 @@ class Jouet < SerieThread
 	
 	def tourneGauche
 		puts "Tourne"
-		@angle += 500 
+		@angle += 300 # en fait c'est avancer
 		if @angle >= 0
 			angleFormate = @angle.to_i.to_s.rjust(8, "0")
 			ecrire "a" + angleFormate
@@ -71,7 +71,7 @@ class Jouet < SerieThread
 	
 	def tourneDroite
 		puts "Tourne"
-		@angle -= 500 
+		@angle -= 300 # en fait c'est reculer
 		if @angle >= 0
 			angleFormate = @angle.to_i.to_s.rjust(8, "0")
 			ecrire "a" + angleFormate
@@ -80,6 +80,10 @@ class Jouet < SerieThread
 			ecrire "f" + angleFormate
 		end
 		puts @angle
+	end
+
+	def baisseBras
+		#ecrire "
 	end
 	
 	def reset
@@ -90,37 +94,85 @@ class Jouet < SerieThread
 		@angle = 0
 		@distance = 0
 	end
-	
 end
 
+class Con
+attr_accessor :type, :val, :num
+	def initialize
+		@type=1
+		@val=0
+		@num=0
+	end
+
+end
 j = Jouet.new
 
 Joystick::Device.open(ARGV[0]) { |joy|
-	loop {
-		ev = joy.ev
+evtemp=""
+begin
+	evtemp=joy.ev
+end while(evtemp.type!=Joystick::Event::BUTTON)
+ev=Con.new
+ev.type=evtemp.type
+ev.val=evtemp.val
+ev.num=evtemp.num
+#ev=evtemp
 
-		case ev.type
-		when Joystick::Event::INIT
-			puts 'init'
-		when Joystick::Event::BUTTON
-			if ev.num == 0 && ev.val == 0
-		      		j.reset
+temps=Time.now.to_f
+	loop {
+		#puts "-3-: " + ev.type.to_s
+		if(joy.pending?)
+			evtemp = joy.ev
+			if(evtemp.type==Joystick::Event::BUTTON)
+				#puts "-1-: " + ev.type.to_s
+				ev.type=evtemp.type
+				ev.val=evtemp.val
+				ev.num=evtemp.num
+				#ev=evtemp
+				#puts ev.type
+			end
+			#puts ev.type
+		else
+			#puts ev.type
+		end
+
+			puts "bouton: #{ev.num}, #{ev.val}"
+			 diff=Time.now.to_f - temps.to_f
+			#puts "-2-: " + ev.type.to_s
+		      	if ev.num == 3 && ev.val ==1		     		
+				if(diff>0.1)
+				temps=Time.now.to_f				
+				#j.avance
+				j.tourneGauche
+				end
+
+		      	elsif ev.num == 0 && ev.val ==1
+		      		if(diff>0.1)
+				temps=Time.now.to_f
+				#j.recule
+				j.tourneDroite
+				end
+		      	
+		      	elsif ev.num == 2 && ev.val ==1
+		      		if(diff>0.1)	
+				temps=Time.now.to_f	      		
+				j.avance
+				end
+		      	
+		      	elsif ev.num == 1 && ev.val ==1
+		      		if(diff>0.1)
+				temps=Time.now.to_f	
+				j.recule
+				end
+		      	elsif ev.num == 5 && ev.val ==1
+		      		if(diff>0.1)
+				temps=Time.now.to_f	
+				j.levebras
+				end
+			
+			elsif ev.val==0
+				puts "on arrete"
 		      	end
-		when Joystick::Event::AXIS
-			puts "axis: #{ev.num}, #{ev.val}"
- 
-		      	if ev.num == 5 && ev.val < 0
-		      		j.avance
-		      	end
-		      	if ev.num == 5 && ev.val > 0
-		      		j.recule
-		      	end
-		      	if ev.num == 4 && ev.val < 0
-		      		j.tourneGauche
-		      	end
-		      	if ev.num == 4 && ev.val > 0
-		      		j.tourneDroite
-		      	end
-   		 end
   	}
 }
+

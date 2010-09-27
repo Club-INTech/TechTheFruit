@@ -33,8 +33,8 @@ class Position < Point
 	end
 	
 	def symetrie
-               Position.new(@x, -@y, -@angle)
-                # self
+               #Position.new(@x, -@y, -@angle)
+                 self
 	end
 	
 

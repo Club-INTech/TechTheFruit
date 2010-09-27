@@ -93,7 +93,8 @@ class RamassageOrangeJaune < Strategie
                         @robot.goTo 2350, 1807, -(Math::PI/4)
                         @robot.goTo 2400, 1847, -(Math::PI/4)
                         sleep 2
-        end
+	end   
+     end
         
         def deplacement(x, y, angle)
                 destination = Position.new(x, y, angle)

@@ -20,7 +20,7 @@ class RobotMagique
         
         def demarrer 
                 # Bleu : recalage3 et changer signe angle + y
-                @robot.recalage3
+                @robot.recalage
                 @robot.actionneursStopUrgence
                 @robot.rangeFourche
                 # @robot.actionneursStopUrgence

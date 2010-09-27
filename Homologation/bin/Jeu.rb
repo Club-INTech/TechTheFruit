@@ -5,7 +5,7 @@ require "readline"
 require "ListeEvenements"
 require "RobotMagique"
 
-positionInitiale = Position.new(300, -300, 0)
+positionInitiale = Position.new(300, 300, 0)
 
 magicien = RobotMagique.new(positionInitiale, ListeEvenements, "Strategies/")
 

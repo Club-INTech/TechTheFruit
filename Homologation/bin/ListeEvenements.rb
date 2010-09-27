@@ -16,7 +16,6 @@ class ListeEvenements < GestionEvenements
         end
 
         def evArretUrgence
-                # return
                 if @compteur > 0
                         return true
                 end
@@ -38,7 +37,7 @@ class ListeEvenements < GestionEvenements
                 #                 @robot.stop
                 #         end
                 # end
-                if capteurs[1] > 10 && (capteurs[1] >= 5000 || capteurs[1] <= 400) && @robot.tempsRestant > 5 && @carte.quelleZone(@robot.position) != 24
+                if capteurs[1] > 10 && (capteurs[1] <= 400) && @robot.tempsRestant > 5 && @carte.quelleZone(@robot.position) != 24
                         @log.debug "Obstacle AvM"
                         
                         sens = @robot.sens

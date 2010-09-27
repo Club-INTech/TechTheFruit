@@ -67,13 +67,13 @@ int refD = 58;//référence de position droite
 int refM = 72;//référence de position milieu
 
 //Valeurs max des pwm
-const int maxO = 255;//6V
-const int maxR = 255;//6V
+const int maxO = 128;//6V
+const int maxR = 255;//24V
 
 //derniers sens rouleau : 
 int tmpR = 0;
 //Valeur max des courants : 
-const int maxC = 512;
+const int maxC = 624;
 const int maxMax = 400;//seuil spécial moteur oranges
 //Compteur de dépassement en courant : 
 int depO = 0, depR = 0; 
@@ -190,11 +190,14 @@ void loop() {
 	//les raffraichissement pour le contrôle des courants.(Rouleau)
 	controleCourantRouleau();
 	//Oscillations selecteur tomates
-	if (actifSel !=0 ){
-		if (currentMillis - previousMillis >= periode){
-			previousMillis = currentMillis;
+        if (currentMillis - previousMillis >= periode){
+		if (actifSel !=0 ){
+		        previousMillis = currentMillis;
 			oscilleSel();
 		}
+                //Serial.print(analogRead(ccR));
+                //Serial.print("\t");
+                //Serial.println(tmpR);
 	}
 	//mouvement bras
 	if (currentMillis - previousMillisO >= periodeO){
@@ -422,22 +425,28 @@ int controleCourantRouleau(){
 		}
 	}
 	if (depR>=10) {
-		stoppeRouleau();//on coupe avant de tout griller
+		//stoppeRouleau();//on coupe avant de tout griller
+		analogWrite(pwmR,0);
 		delay(50);//on lui laisse le temps de s'arrêter
 		if (tmpR==0) {
-			demarreRouleauHaut();
+			//demarreRouleauHaut();
+                        digitalWrite(dirR,1);
 		}
 		if (tmpR==1) {
-			demarreRouleauBas();
+			//demarreRouleauBas();
+                        digitalWrite(dirR,0);
 		}
 		delay(500);//on tente de le débloquer
-		stoppeRouleau();
+		//stoppeRouleau();
+		analogWrite(pwmR,0);
 		delay(50);//on lui laisse le temps de s'arrêter
 		if (tmpR==0){
-			demarreRouleauBas();
+			//demarreRouleauBas();
+                        digitalWrite(dirR,0);
 		}
 		if (tmpR==1){
-			demarreRouleauHaut();
+			//demarreRouleauHaut();
+                        digitalWrite(dirR,1);
 		}
 		return 1;
 	}

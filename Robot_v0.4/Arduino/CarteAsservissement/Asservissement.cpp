@@ -97,9 +97,9 @@ Asservissement::calculePositionIntermediaire(long int positionReelle)
 	}
 
 	erreur = positionIntermediaireZoom - positionReelle * PRESCALER;
-	positionIntermediaireZoom += n * Acc;
+	//positionIntermediaireZoom += n * Acc;
 	if (ABS(erreur) < erreurMax) {
-		//positionIntermediaireZoom += n * Acc;
+		positionIntermediaireZoom += n * Acc;
 		if (blocageTemp > 0) {
 			blocageTemp--;
 		}
@@ -108,13 +108,13 @@ Asservissement::calculePositionIntermediaire(long int positionReelle)
 		}
 	}
 	else if (erreur >= 0) {	
-		//positionIntermediaireZoom = positionReelle * PRESCALER + erreurMax;
+		positionIntermediaireZoom = positionReelle * PRESCALER + erreurMax;
 		if (blocageTemp < TRIGGER_BLOCAGE) {
 			blocageTemp++;
 		}
 	}
 	else {
-		//positionIntermediaireZoom = positionReelle * PRESCALER - erreurMax;
+		positionIntermediaireZoom = positionReelle * PRESCALER - erreurMax;
 		if (blocageTemp > -TRIGGER_BLOCAGE) {
 			blocageTemp--;
 		}

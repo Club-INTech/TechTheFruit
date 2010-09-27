@@ -48,9 +48,9 @@ class Asservissement
                 #@interface.conversionTicksDistance = 9.50
                 #@interface.conversionTicksAngle = 1530,9
 
-                @interface.changerVitesse([2000, 2000])
+                @interface.changerVitesse([3000, 3000])
                 # @interface.changerAcceleration([10, 10])
-                @interface.changerPWM([1023, 1023])
+                @interface.changerPWM([2000, 2046])
                 # @interface.changerKp([0, 0])
                 # @interface.changerKd([0, 0])
 
@@ -105,7 +105,7 @@ class Asservissement
                         corrigeTrajectoire destination	               
 
                         i = 0
-			@interface.changerPWM([1023,1023])
+			@interface.changerPWM([2046,2046])
                         while i < 200 && (distance = Vecteur.new(position, destination).norme) >= @precisionDouble
                                 # En cas de stop, on arrête de corriger la position
                                 # On sort alors du goTo
@@ -159,14 +159,14 @@ class Asservissement
         end
 
         def avancer distance
-		@interface.changerPWM([1023,1023])
+		@interface.changerPWM([2046,2046])
 		puts "avancer",distance
                 @interface.envoiConsigneDistance(distance)
 
         end
         
         def tourner angle
-		@interface.changerPWM([1023,300])
+		@interface.changerPWM([3000,500])
            	puts "tourner",angle
                 @interface.envoiConsigneAngle(angle)
                 
@@ -292,7 +292,7 @@ class Asservissement
 
         # Tourne relativement à la position du robot
         def tourneDe angleDonne
-		@interface.changerPWM([1023, 300])
+		@interface.changerPWM([3000, 700])
                 @drapeauArret = false
 		
                 positionInitiale = position.angle
@@ -361,26 +361,26 @@ class Asservissement
         def recalage
                 @interface.changerVitesse([1300, 500])
 		remiseAZero Position.new(310, 310, Math::PI/2)
-                @interface.changerPWM([300, 1023])
+                @interface.changerPWM([700, 2046])
 		goTo Position.new(310, -2500, Math::PI/2) , :blocageTranslation
                 goTo Position.new(310, -2500, Math::PI/2), :blocageTranslation
 		sleep 0.5		
 		remiseAZero Position.new(position.x, 170, Math::PI/2+0.0085)
 		sleep 0.5
 		# return true
-                @interface.changerPWM([1023, 1023])
+                @interface.changerPWM([2046, 2046])
                 goTo Position.new(position.x, 310), :bypass
 		sleep 0.5
 		position.prettyprint		
 		tourneDe -Math::PI/2 
-                @interface.changerPWM([300, 1023]) 
+                @interface.changerPWM([700, 2046]) 
                 goTo Position.new(-2500, position.y, 0), :blocageTranslation
                 goTo Position.new(-2500, position.y, 0), :blocageTranslation
 		sleep 0.5
                 remiseAZero Position.new(170, position.y, 0.0085)
                 sleep 0.5
                 # return true
-                @interface.changerPWM([1023, 1023])
+                @interface.changerPWM([2046,2046])
                 # sleep 1  
 		goTo Position.new(310, position.y, 0), :bypass                
 		position.prettyprint		

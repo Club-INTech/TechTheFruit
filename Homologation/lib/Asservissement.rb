@@ -274,17 +274,16 @@ class Asservissement
                 sleep 1
                 @interface.changerPWM([1023, 1023])
                 # sleep 1  
-                goTo Position.new(285, position.y, Math::PI/2), :bypass
-
+                goTo Position.new(300, position.y, Math::PI/2), :bypass
                 @interface.changerPWM([300, 1023])
-                goTo Position.new(285, -2500, Math::PI/2), :blocageTranslation
+                goTo Position.new(300, -2500, Math::PI/2), :blocageTranslation
 		sleep 1
-                goTo Position.new(285, -2500, Math::PI/2), :blocageTranslation
+                goTo Position.new(300, -2500, Math::PI/2), :blocageTranslation
                 remiseAZero Position.new(position.x, 170, Math::PI/2)
                 # sleep 1
                 @interface.changerPWM([1023, 1023])
-                goTo Position.new(position.x, 295, Math::PI/2), :bypass
-                goTo Position.new(285, 295, 0)
+                goTo Position.new(position.x, 300, Math::PI/2), :bypass
+                goTo Position.new(300, 300, 0)
                 
                 @interface.changerVitesse([2000, 1000])
         end	

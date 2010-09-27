@@ -36,7 +36,7 @@ class InterfaceAsservissement < SerieThread
                 @position = positionParDefaut
                 @sens = 1
 
-                @conversionTicksDistance = 9.6769
+                @conversionTicksDistance = (9.6769 * 1)
                 @conversionTicksAngle = 1528.735
 
                 @offsetAngulaire = positionParDefaut.angle
