@@ -1,0 +1,51 @@
+# Logfile created on Wed May 12 18:18:47 +0200 2010 by logger.rb/22285
+I, [2010-05-12T18:18:47.147334 #3231]  INFO -- : initialisation de la carte terminée
+I, [2010-05-12T18:18:47.147879 #3231]  INFO -- : Initialisation du robot...
+D, [2010-05-12T18:18:47.170350 #3231] DEBUG -- : Association des périphériques
+D, [2010-05-12T18:18:47.170848 #3231] DEBUG -- : Qui est /dev/ttyUSB0 ?
+D, [2010-05-12T18:18:47.425925 #3231] DEBUG -- : Qui est /dev/ttyUSB1 ?
+D, [2010-05-12T18:18:47.677351 #3231] DEBUG -- : Qui est /dev/ttyUSB2 ?
+D, [2010-05-12T18:18:47.923014 #3231] DEBUG -- : Asservissement sur /dev/ttyUSB0
+D, [2010-05-12T18:18:47.925584 #3231] DEBUG -- : Asservissement prêt
+D, [2010-05-12T18:18:47.925982 #3231] DEBUG -- : Actionneurs sur /dev/ttyUSB1
+D, [2010-05-12T18:18:47.927687 #3231] DEBUG -- : Evitement sur /dev/ttyUSB2
+I, [2010-05-12T18:18:47.929441 #3231]  INFO -- : Reset...
+I, [2010-05-12T18:18:47.929878 #3231]  INFO -- : Reset effectué
+I, [2010-05-12T18:18:47.930186 #3231]  INFO -- : Initialisation finie
+I, [2010-05-12T18:18:47.931772 #3231]  INFO -- : Démarrage...
+D, [2010-05-12T18:18:47.932059 #3231] DEBUG -- : Activation de l'odométrie
+I, [2010-05-12T18:18:47.932370 #3231]  INFO -- : Robot démarré
+D, [2010-05-12T18:18:47.933053 #3231] DEBUG -- : Chargement des évènements
+D, [2010-05-12T18:18:47.933500 #3231] DEBUG -- :     evStockageTomates chargé
+D, [2010-05-12T18:18:47.933878 #3231] DEBUG -- :     evTimer chargé
+D, [2010-05-12T18:18:47.934213 #3231] DEBUG -- :     evArretUrgence chargé
+D, [2010-05-12T18:18:47.934641 #3231] DEBUG -- : Evènements chargés
+D, [2010-05-12T18:18:47.934968 #3231] DEBUG -- : Chargement des stratégies de Strategies/
+I, [2010-05-12T18:18:47.938267 #3231]  INFO -- : Stratégie Dechargement chargée
+D, [2010-05-12T18:18:47.939325 #3231] DEBUG -- :     Dechargement
+D, [2010-05-12T18:18:47.952369 #3231] DEBUG -- :     RamassageOrangeJaune
+D, [2010-05-12T18:18:47.954984 #3231] DEBUG -- :     RamasseNosOranges
+D, [2010-05-12T18:18:47.957821 #3231] DEBUG -- :     RamasseLeurOranges
+D, [2010-05-12T18:18:47.961065 #3231] DEBUG -- :     RamassageOrangeBleu
+D, [2010-05-12T18:18:47.962055 #3231] DEBUG -- : Stratégies chargées
+I, [2010-05-12T18:18:55.894306 #3231]  INFO -- : Attente du jumper
+I, [2010-05-12T18:18:55.896172 #3231]  INFO -- : Jumper débloqué
+I, [2010-05-12T18:18:55.896567 #3231]  INFO -- : Démarrage du timer
+D, [2010-05-12T18:18:55.896968 #3231] DEBUG -- : Démarrage des évènements
+W, [2010-05-12T18:18:55.898665 #3231]  WARN -- : Arrêt anormal des évènements
+D, [2010-05-12T18:18:55.900109 #3231] DEBUG -- : Meilleure stratégie : RamassageOrangeBleu
+I, [2010-05-12T18:18:55.900494 #3231]  INFO -- : Aller à : 300, -300, 0
+D, [2010-05-12T18:18:56.023712 #3231] DEBUG -- : [399, 982, 1063, 61]
+D, [2010-05-12T18:18:56.240381 #3231] DEBUG -- : [540, 1033, 658, 62]
+D, [2010-05-12T18:18:56.457457 #3231] DEBUG -- : [1023, 1078, 326, 61]
+D, [2010-05-12T18:18:56.645851 #3231] DEBUG -- : [1011, 637, 270, 62]
+D, [2010-05-12T18:18:56.832075 #3231] DEBUG -- : [994, 390, 269, 61]
+D, [2010-05-12T18:18:56.832830 #3231] DEBUG -- : Obstacle AvM
+D, [2010-05-12T18:18:56.855952 #3231] DEBUG -- : Rotation finie
+D, [2010-05-12T18:18:57.020325 #3231] DEBUG -- : [988, 443, 267, 60]
+D, [2010-05-12T18:18:57.218675 #3231] DEBUG -- : [1004, 1025, 268, 61]
+D, [2010-05-12T18:18:57.424889 #3231] DEBUG -- : [1005, 781, 390, 61]
+D, [2010-05-12T18:18:57.625263 #3231] DEBUG -- : [804, 1042, 445, 62]
+D, [2010-05-12T18:18:57.835528 #3231] DEBUG -- : [360, 1030, 1000, 61]
+D, [2010-05-12T18:18:57.861862 #3231] DEBUG -- : Rotation finie
+D, [2010-05-12T18:18:57.862623 #3231] DEBUG -- : Fin Aller à : 300.725287884348, -299.523882233848, -0.0490507053491429
