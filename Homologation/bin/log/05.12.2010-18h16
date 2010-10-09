@@ -1,7 +1,0 @@
-# Logfile created on Wed May 12 18:16:48 +0200 2010 by logger.rb/22285
-I, [2010-05-12T18:16:48.981062 #3087]  INFO -- : initialisation de la carte terminée
-I, [2010-05-12T18:16:48.981585 #3087]  INFO -- : Initialisation du robot...
-D, [2010-05-12T18:16:49.013185 #3087] DEBUG -- : Association des périphériques
-I, [2010-05-12T18:16:51.075336 #3090]  INFO -- : initialisation de la carte terminée
-I, [2010-05-12T18:16:51.075861 #3090]  INFO -- : Initialisation du robot...
-D, [2010-05-12T18:16:51.098626 #3090] DEBUG -- : Association des périphériques
