@@ -25,7 +25,7 @@ class Vecteur
 
 	# Calcule l'angle du vecteur par rapport à l'axe (Ox)
 	def angle
-		Math.atan2 @y, @x
+		Math.atan @y, @x
 	end
 	
 	def produitScalaire v
