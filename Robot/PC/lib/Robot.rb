@@ -52,18 +52,18 @@ class Robot
         # Démarre chaque service. Si activeTimer est vrai, alors le robot
         # s'arrête au bout de 90 secondes.
         def demarrer
-                @log.info "Démarrage..."
+                @log.info "Demarrage..."
 
                 @asservissement.demarrer
                 @actionneurs.demarrer
                 @evitement.demarrer
 
-                @log.info "Robot démarré"
+                @log.info "Robot demarray"
         end
 
         def demarrerTimer
                 @timer = Thread.new {
-                        @log.info "Démarrage du timer"
+                        @log.info "Daymarrage du timer"
                         for i in (1..88)
                                 @tempsRestant -= 1
                                 sleep 1
@@ -74,7 +74,7 @@ class Robot
                         @asservissement.arreter
                         @actionneurs.arreter
                         @evitement.arreter
-                        @log.info "Fin du temps réglementaire"
+                        @log.info "Fin du temps rayglementaire"
                         exit
                 }
         end
@@ -85,20 +85,20 @@ class Robot
 
         # Arrêt des services
         def arreter
-                @log.info "Arrêt..."
+                @log.info "Arrayt..."
 
                 @asservissement.arreter
                 @actionneurs.arreter
                 @evitement.arreter
 
-                @log.info "Robot arrêté"
+                @log.info "Robot arraytay"
         end
 
         # Reset du robot
         def reset
                 @log.info "Reset..."
                 @asservissement.reset
-                @log.info "Reset effectué"
+                @log.info "Reset effectuay"
                 1
         end
 
@@ -166,21 +166,21 @@ class Robot
 
         # Desactive l'asservissement
         def desactiveAsservissement
-                @log.debug "Désactive l'asservissement polaire"
+                @log.debug "Daysactive l'asservissement polaire"
                 @asservissement.desactiveAsservissement
                 1
         end
 
         # Desactive l'asservissement
         def desactiveAsservissementRotation
-                @log.debug "Désactive l'asservissement polaire"
+                @log.debug "Daysactive l'asservissement polaire"
                 @asservissement.desactiveAsservissementRotation
                 1
         end
 
         # Desactive l'asservissement
         def desactiveAsservissementTranslation
-                @log.debug "Désactive l'asservissement angulaire"
+                @log.debug "Daysactive l'asservissement angulaire"
                 @asservissement.desactiveAsservissementTranslation
                 1
         end
@@ -189,27 +189,27 @@ class Robot
         # Renvoi vrai si aucun stop durant la manoeuvre
         def goTo x, y, *condition
                 if @couleur == :jaune
-                        @log.info "Aller à : " + x.to_s + ", " + y.to_s + ", " + angle.to_s
+                        @log.info "Aller: "  + x.to_s + ", " + y.to_s + ", " + angle.to_s
                         @asservissement.goTo Point.new(x, y)
                 else
-                        @log.info "Aller à : " + x.to_s + ", " + (-y).to_s + ", " + (-angle).to_s
+                        @log.info "Aller : " + x.to_s + ", " + (-y).to_s + ", " + (-angle).to_s
                         @asservissement.goTo Point.new(x, y).symetrie
                 end
         end
 
         def goToEx x, y, *condition
                 if @couleur == :jaune
-                        @log.info "Aller à : " + x.to_s + ", " + y.to_s
+                        @log.info "Aller a� : " + x.to_s + ", " + y.to_s
                         @asservissement.goToEx Point.new(x, y)
                 else
-                        @log.info "Aller à : " + x.to_s + ", " + (-y).to_s
+                        @log.info "Aller a� : " + x.to_s + ", " + (-y).to_s
                         @asservissement.goToEx Point.new(x, y).symetrie
                 end
         end
 
         def goToDep x, y, *condition
                 if @couleur == :jaune
-                        @log.info "Aller à : " + x.to_s + ", " + y.to_s + ", " + angle.to_s
+                        @log.info "Aller A� : " + x.to_s + ", " + y.to_s + ", " + angle.to_s
                         @asservissement.goToDep Point.new(x, y)
                 else
                         @log.info "Aller à : " + x.to_s + ", " + (-y).to_s + ", " + (-angle).to_s
@@ -280,7 +280,7 @@ class Robot
 
         # Envoi un signal d'arrêt à l'arduino, sort du goTo en cours
         def stop
-                @log.info("Envoi du signal d'arrêt à l'arduino")
+                @log.info("Envoi du signal d'arraytay� l'arduino")
                 @asservissement.stop
                 1
         end
